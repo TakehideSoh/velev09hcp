@@ -128,7 +128,7 @@ sub main {
         my $R_Ref;
         my $exists_deg1_node = 0;
         ($R_Ref, $nof_nodes, $nof_edges, $exists_deg1_node) =
-            &parser::readFile($inputFile, $type);
+            &readFile($inputFile, $type);
 
         #	&showGraph($R_Ref);
 
