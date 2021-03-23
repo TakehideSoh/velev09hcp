@@ -39,6 +39,8 @@ $tag = "default";
     'type'    => \$type,
     'detail'  => \$detail,
     'limit=s' => \$timeLimit,
+    'cnf=s' => \$cnfFile,
+    'out=s' => \$outFile,
     'tag=s'   => \$tag,
     'keep'    => \$keep,
 );
