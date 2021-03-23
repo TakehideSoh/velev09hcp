@@ -33,7 +33,7 @@ $tag = "default";
 # Command line options
 &GetOptions(
     'verbose'   => \$verbose,
-    'solver'   => \$SATsolver,
+    'solver=s'   => \$SATsolver,
     'debug'   => \$debug,
     'help'    => \$help,
     'inter'   => \$inter,
