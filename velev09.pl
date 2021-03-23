@@ -24,7 +24,7 @@ my (
     $debug, $help, $inter, $inverse, $type, $verbose,
     $velve, $detail, $timeLimit, $tag, $keep
 );
-$timeLimit = 18446744073709551615;
+$timeLimit = 100000000000000;
 
 my $time0 = time;
 
@@ -110,6 +110,8 @@ sub main {
     my ($t1, $t2, $t3, $t4, $t5);
 
     eval {
+
+        &log("using $SATsolver");
 
         # メッセージを指定 \n は必要なので注意
         local $SIG{ALRM} = sub { die "alarm\n" };
