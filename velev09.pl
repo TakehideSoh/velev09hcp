@@ -16,8 +16,8 @@ my $SATsolver = "/Users/soh/app/cadical-sc2020-45029f8/build/cadical";
 require "./parser.pl";
 
 # Path for output files
-my $cnfFile = "./velev$$.cnf";
-my $outFile = "./velev$$.out";
+my $cnfFile = "/tmp/velev$$.cnf";
+my $outFile = "/tmp/velev$$.out";
 
 # Variables for command line options
 my (
@@ -33,6 +33,7 @@ $tag = "default";
 # Command line options
 &GetOptions(
     'verbose'   => \$verbose,
+    'solver'   => \$SATsolver,
     'debug'   => \$debug,
     'help'    => \$help,
     'inter'   => \$inter,
