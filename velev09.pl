@@ -24,7 +24,7 @@ my (
     $debug, $help, $inter, $inverse, $type, $verbose,
     $velve, $detail, $timeLimit, $tag, $keep
 );
-$timeLimit = 100000000000000;
+$timeLimit = 10000000000;
 
 my $time0 = time;
 
