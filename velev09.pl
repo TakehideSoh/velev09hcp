@@ -457,7 +457,7 @@ sub execSATsolver {
 
     my $cmd = "$SATsolver $file $outFile";
 
-    if ($SATsolver =~ /.*minisat/) {
+    if ($SATsolver =~ /\b(minisat|manyglucose)/) {
         $cmd = "$SATsolver $file $outFile";
     }
     else {
