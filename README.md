@@ -12,16 +12,13 @@
 ## Files
 
   - README : this file
-  - perser.pl : perse *.col file
   - velev09.pl : main program
 
 ## Requirements 
 
   - perl (we checked this program works on 5.12.3. But it probably
     works on other Perl 5.)
-  - minisat (http://minisat.se) 
-    Other SAT solver will work if it generates same out file format
-    as minisat.
+  - minisat (http://minisat.se) with output file, or other SAT solvers generates a model in competition format.
 
 ## Before Running
   
@@ -38,10 +35,10 @@ $ ./velev09.pl <Input File>
 -keep          this option keeps encoded *.cnf file and SAT solution
                file *.cnf
 
--limit=<T.O.>  set time out
+-solvert=<solver path.> set sat solver
 
 ## Example
 
 ``` bash
-$ ./velev09.pl -keep -limit=10 myciel5.col
+$ ./velev09.pl -keep -solver /hoge/minisat myciel5.col
 ```
