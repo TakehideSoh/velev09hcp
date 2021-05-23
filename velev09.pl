@@ -8,9 +8,10 @@ use IPC::Open2;
 use File::Basename;
 use Time::HiRes;
 
-# Path for SAT solvers
-# my $SATsolver = "/Users/soh/app/minisat-master/build/release/bin/minisat";
-my $SATsolver = "/Users/soh/app/cadical-sc2020-45029f8/build/cadical";
+local $| = 1;
+
+# Path for SAT solvers (neccesary to be changed or give your solver path by option)
+my $SATsolver = "/home/hoge/solver/satsolver";
 
 # Parser of *.col file
 # require "./parser.pl";
@@ -22,7 +23,7 @@ my $outFile = "/tmp/velev$$.out";
 # Variables for command line options
 my (
     $debug, $help, $inter, $inverse, $type, $verbose,
-    $velve, $detail, $timeLimit, $tag, $keep
+    $velve, $detail, $timeLimit, $tag, $keep, $encodeOnly
 );
 $timeLimit = 10000000000;
 
@@ -33,6 +34,7 @@ $tag = "default";
 # Command line options
 &GetOptions(
     'verbose'   => \$verbose,
+    'encodeOnly'   => \$encodeOnly,    
     'solver=s'   => \$SATsolver,
     'debug'   => \$debug,
     'help'    => \$help,
@@ -46,6 +48,7 @@ $tag = "default";
     'keep'    => \$keep,
 );
 $inverse = 1;
+$verbose = 1;
 
 if (@ARGV != 1 || $help) {
     &usage();
@@ -177,6 +180,10 @@ sub main {
 
         $t3 = Time::HiRes::time;
         $timeDetail{"saten"} = sprintf("%.3f", $t3 - $t2);
+
+        if($encodeOnly) {
+            exit 0;
+        }
 
         # 6. SAT solver の実行
         &log("executing SAT solver.");
@@ -322,6 +329,8 @@ sub velev {
 
     push(@outputs, ($num_of_vars, $nof_cls));
     open(CNF, "+<", $cnfFile) || die;
+    &log("#Vars: $num_of_vars");
+    &log("#Clss: $nof_cls");    
     $_ = "p cnf $num_of_vars $nof_cls";
     print CNF substr($_ . " " x 63, 0, 63) . "\n";
     close CNF;
@@ -336,6 +345,7 @@ sub velev {
     $timeDetail{"encode"} = $t[7] - $t[0];
 
     #   @{$Clss_Ref} = ();
+
 
 }
 
@@ -1156,14 +1166,10 @@ sub readFile {
 
     if ($type) {
         while (<IN>){
-            # ���Ԥ򥹥��åפ���
             if(/^\s*$/) { next; }
-            # ʸ��������Ԥ�̵�뤹��
             if(/[a-z]+/) { next; }
-            # �Ρ��ɿ��Τߤ򵭺ܤ��Ƥ���Ԥ�̵�뤹��
             if(/^\d+$/) { next; }
 
-            # ���å��Ԥ�ѡ�������
             my @nodes = split;
             for (my $i=2; $i<@nodes; $i++) {
                 ${$R[$nodes[0]+1]}{$nodes[$i]+1} = 1;
@@ -1173,22 +1179,22 @@ sub readFile {
             }
         }
     } else {
-        ##�ե����뤫��ȿ�����ɤ߹���
+
         while (<IN>){
-            # ���Ԥ򥹥��åפ���
             if(/^\s*$/){  next; }
-            # �Ρ��ɿ��ȥ��å������l������
             if(/^p\s+edge[s]*\s+(\d+?)\s+(\d+?)\s*$/){
                 $nof_nodes = $1;
                 $nof_edges = $2;
+            } elsif(/^p\s+(\d+?)\s+(\d+?)\s*$/) {
+                $nof_nodes = $1;
+                $nof_edges = $2;
             }
-            # ���å��Ԥ�ѡ������� (�������˥��å�����Ͽ����)
             if(/^e\s+(\d+?)\s+(\d+?)\s*$/){
                 my ($n1,$n2) = ($1,$2);
                 if ($n1==$n2) {
                     #		    print "selfedge\n";
                     next;
-                } #��ʬ���ȤؤΥ��å����Ե���
+                } 
                 ${$R[$n1]}{$n2} = 1;
                 ${$R[$n2]}{$n1} = 1;
                 next;
@@ -1198,13 +1204,12 @@ sub readFile {
 
     my $deg1Flag=0;
     my $noeFlag=0;
-    my %old2new = (); # �Ť��ֹ椫�鿷�����ֹ�ؤμ���
+    my %old2new = (); 
     my $new_node_index=1;
     my @G=();
     my $edge_sum=0;
 
     for (my $i=1; $i <= $nof_nodes; $i++) {
-        #�Ρ����������Ǥ�¸�ߤ����
         if ($R[$i]) {
             $old2new{$i} = $new_node_index;
             $new_node_index++;
@@ -1218,8 +1223,6 @@ sub readFile {
         }
     }
 
-    # �Ρ����ֹ椬�ͤޤäƤ��ʤ�����դϺƹ������Ƶͤ��
-    # ���κ�Ȥˤ���Υե�����ȥΡ����ֹ�ϰ��פ��ʤ��ʤ�
     if ($noeFlag) {
         #	print "reconstruct\n";
         for (my $i=1; $i <= $nof_nodes; $i++) {
@@ -1245,6 +1248,7 @@ sub readFile {
         #     }
         # }
 
+
         return (\@G, $nof_nodes, $nof_edges, $deg1Flag);
     }
 
@@ -1254,6 +1258,9 @@ sub readFile {
     # 	    print "deg($i)=$deg\n";
     # 	}
     # }
+    
+    &log("#nodes: $nof_nodes");
+    &log("#edges: $nof_edges");
 
     return (\@R, $nof_nodes, $nof_edges, $deg1Flag);
 
